@@ -30,8 +30,9 @@ function RegisterForm({ user, updateUser }) {
   return (
     <Form onSubmit={handleSubmit}>
       <Form.Group className="mb-3" controlId="formBasicBio">
-        <Form.Label>Bio</Form.Label>
+        <Form.Label>Gamer Bio</Form.Label>
         <Form.Control as="textarea" name="bio" required placeholder="Enter your Bio" onChange={handleChange} />
+        <Form.Text className="text-muted">Let other gamers know a little bit about you...</Form.Text>
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="formBasicUserName">
