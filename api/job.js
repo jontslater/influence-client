@@ -2,7 +2,7 @@ import { clientCredentials } from '../utils/client';
 
 const endpoint = clientCredentials.databaseURL;
 
-const getAllJobs = () => fetch(`${endpoint}/users`, {
+const getAllJobs = () => fetch(`${endpoint}/jobs`, {
   method: 'GET',
   headers: {
     'Content-Type': 'application/json',
@@ -14,7 +14,7 @@ const getAllJobs = () => fetch(`${endpoint}/users`, {
     throw error;
   });
 
-const createJob = (payload) => fetch(`${endpoint}/users`, {
+const createJob = (payload) => fetch(`${endpoint}/jobs`, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ const createJob = (payload) => fetch(`${endpoint}/users`, {
     throw error;
   });
 
-const updateJob = (id, payload) => fetch(`${endpoint}/users/${id}`, {
+const updateJob = (id, payload) => fetch(`${endpoint}/jobs/${id}`, {
   method: 'PUT',
   headers: {
     'Content-Type': 'application/json',
@@ -41,14 +41,14 @@ const updateJob = (id, payload) => fetch(`${endpoint}/users/${id}`, {
   });
 
 const getSingleJob = (id) => new Promise((resolve, reject) => {
-  fetch(`${endpoint}/users/${id}`)
+  fetch(`${endpoint}/jobs/${id}`)
     .then((response) => response.json())
     .then(resolve)
     .catch(reject);
 });
 
 const deleteSingleJob = (id) => new Promise((resolve, reject) => {
-  fetch(`${endpoint}/types/${id}`, {
+  fetch(`${endpoint}/jobs/${id}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
