@@ -19,6 +19,7 @@ export default function Profile() {
     if (user?.uid) {
       getUser();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, user?.uid]);
 
   const handleEditUserClick = () => {

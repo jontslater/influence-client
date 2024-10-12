@@ -1,6 +1,7 @@
 import { Button } from 'react-bootstrap';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useAuth } from '../utils/context/authContext';
 import { getAllJobs } from '../api/job';
 
@@ -16,11 +17,7 @@ function Home() {
 
   useEffect(() => {
     getJobs();
-  }, [id, jobs]);
-
-  const handleEditUserClick = () => {
-    router.push(`/jobs/edit/${jobs?.id}`);
-  };
+  }, [id]);
 
   return (
     <div>
@@ -34,7 +31,9 @@ function Home() {
             <p>Pay: ${job.pay}</p>
             <p>Client: {job.client_id.userName}</p>
             <p>Description: {job.description}</p>
-            <Button variant="primary" onClick={handleEditUserClick}>View Details</Button>
+            <Link href={`/jobs/${job.id}`} passHref>
+              <Button variant="info" className="action-button">VIEW</Button>
+            </Link>
           </li>
         ))}
       </ul>
