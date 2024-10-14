@@ -26,6 +26,10 @@ export default function Profile() {
     router.push(`/user/edit/${userDetails?.id}`);
   };
 
+  const handleNewJobClick = () => {
+    router.push('/jobs/new');
+  };
+
   return (
     <Container className="mt-5">
       <Card className="text-center">
@@ -43,6 +47,9 @@ export default function Profile() {
           </Card.Text>
           <Button variant="primary" onClick={handleEditUserClick}>
             Edit Profile
+          </Button>
+          <Button variant="primary" onClick={handleNewJobClick}>
+            Create A Job
           </Button>
         </Card.Body>
       </Card>

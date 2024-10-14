@@ -54,10 +54,10 @@ export default function ViewJob() {
 
           {/* Buttons for Edit and Apply */}
           <div className="d-flex gap-2" style={{ marginTop: '10px' }}>
-            <Link href={`/job/edit/${jobDetails.id}`} passHref>
+            <Link href={`/jobs/edit/${jobDetails.id}`} passHref>
               <Button variant="warning" className="btn action-button">EDIT</Button>
             </Link>
-            <Link href={`/job/apply/${jobDetails.id}`} passHref>
+            <Link href={`/jobs/apply/${jobDetails.id}`} passHref>
               <Button variant="success" className="btn action-button">Apply</Button>
             </Link>
           </div>
