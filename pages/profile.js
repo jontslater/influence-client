@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Container, Card, Button } from 'react-bootstrap';
+import {
+  Container, Card, Button, ListGroup,
+} from 'react-bootstrap';
 import { useAuth } from '../utils/context/authContext';
 import { getUserByUid } from '../api/users';
+import { getJobsByUserId } from '../api/job'; // Import the function to get jobs by user ID
 
 export default function Profile() {
   const [userDetails, setUserDetails] = useState({});
+  const [jobs, setJobs] = useState([]); // State to hold the jobs
   const router = useRouter();
   const { user } = useAuth();
-  const { id } = router.query;
 
   const getUser = () => {
     getUserByUid(user?.uid).then(setUserDetails);
-    console.log(user);
   };
 
   useEffect(() => {
     if (user?.uid) {
       getUser();
+      getJobsByUserId(user.uid).then(setJobs);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, user?.uid]);
+  }, [user?.uid]);
 
   const handleEditUserClick = () => {
     router.push(`/user/edit/${userDetails?.id}`);
@@ -40,7 +42,6 @@ export default function Profile() {
             className="rounded-circle mb-3"
             style={{ width: '100px', height: '100px' }}
           />
-
           <Card.Title>{userDetails.userName || 'User Name'}</Card.Title>
           <Card.Text>
             {userDetails.bio || 'This is the user bio. Edit to add more details about yourself.'}
@@ -53,6 +54,22 @@ export default function Profile() {
           </Button>
         </Card.Body>
       </Card>
+
+      {/* Display the jobs section */}
+      <Container className="mt-4">
+        <h3>Jobs Posted by {userDetails.userName || 'User'}</h3>
+        {jobs.length > 0 ? (
+          <ListGroup>
+            {jobs.map((job) => (
+              <ListGroup.Item key={job.id}>
+                <strong>{job.title}</strong> - {job.description}
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        ) : (
+          <p>No jobs available for this user.</p>
+        )}
+      </Container>
     </Container>
   );
 }

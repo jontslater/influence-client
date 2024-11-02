@@ -59,6 +59,18 @@ const deleteSingleJob = (id) => new Promise((resolve, reject) => {
     .catch(reject);
 });
 
+const getJobsByUserId = (uid) => fetch(`${endpoint}/jobs?user=${uid}`, {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+  .then((response) => response.json())
+  .catch((error) => {
+    console.error('Error fetching jobs by user:', error);
+    throw error;
+  });
+
 export {
-  getAllJobs, createJob, updateJob, getSingleJob, deleteSingleJob,
+  getAllJobs, createJob, updateJob, getSingleJob, deleteSingleJob, getJobsByUserId,
 };

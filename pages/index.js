@@ -30,6 +30,7 @@ function Home() {
             <p>Complete: {job.complete ? 'Yes' : 'No'}</p>
             <p>Pay: ${job.pay}</p>
             <p>Client: {job.client_id.userName}</p>
+            <p>Client Rating: {job.client_id.rating}/5</p>
             <p>Description: {job.description}</p>
             <Link href={`/jobs/${job.id}`} passHref>
               <Button variant="info" className="action-button">VIEW</Button>
