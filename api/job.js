@@ -59,7 +59,7 @@ const deleteSingleJob = (id) => new Promise((resolve, reject) => {
     .catch(reject);
 });
 
-const getJobsByUserId = (uid) => fetch(`${endpoint}/jobs?user=${uid}`, {
+const getJobsByUserId = (id) => fetch(`${endpoint}/jobs?client_id=${id}`, {
   method: 'GET',
   headers: {
     'Content-Type': 'application/json',
