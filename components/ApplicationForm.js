@@ -1,60 +1,90 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { createApplication } from '../api/applications'; // Import API call
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { Button, Form } from 'react-bootstrap';
+import { createApplication } from '../api/applications'; // API function to handle POST
+import { getSingleJob } from '../api/job'; // API function to fetch job details
+import { useAuth } from '../utils/context/authContext'; // Auth context to get the logged-in user
 
-const ApplicationForm = ({ jobId, posterId, applicantId }) => {
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
+export default function ApplicationForm() {
+  const router = useRouter();
+  const { id } = router.query; // Job ID from the URL
+  const { user } = useAuth(); // Get the authenticated user
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    setSuccess(false);
+  const [jobDetails, setJobDetails] = useState(null); // Job details state
+  const [applicationData, setApplicationData] = useState({
+    message: '', // Message or cover letter from the applicant
+  });
 
-    try {
-      const applicationPayload = {
-        job: jobId,
-        poster: posterId,
-        applicant: applicantId,
-      };
-
-      await createApplication(applicationPayload);
-      console.log(applicationPayload);
-
-      setSuccess(true);
-    } catch (err) {
-      setError('Failed to apply for the job. Please try again.');
-    } finally {
-      setLoading(false);
+  // Fetch job details based on job ID
+  useEffect(() => {
+    if (id) {
+      getSingleJob(id)
+        .then((data) => setJobDetails(data))
+        .catch((error) => console.error('Error fetching job:', error));
     }
+  }, [id]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setApplicationData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Create application payload
+    const applicationPayload = {
+      message: applicationData.message,
+      applicant_id: user.id, // Authenticated user's ID
+      job_id: id, // Job ID from the URL
+    };
+
+    console.log(applicationPayload); // Add this line to check the payload before sending
+
+    // Submit the application
+    createApplication(applicationPayload)
+      .then(() => {
+        alert('Application submitted successfully!');
+        router.push(`/jobs/${id}`); // Redirect to job detail page
+      })
+      .catch((error) => {
+        console.error('Error submitting application:', error.response ? error.response.data : error);
+        alert('Failed to submit application.');
+      });
+  };
+
+  if (!jobDetails) {
+    return <p>Loading job details...</p>;
+  }
+
   return (
-    <div>
-      {success ? (
-        <p style={{ color: 'green' }}>You successfully applied for the job!</p>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <p>
-            By applying for this job, your application will be sent to the
-            poster for review.
-          </p>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          <button type="submit" disabled={loading}>
-            {loading ? 'Submitting...' : 'Apply Now'}
-          </button>
-        </form>
-      )}
+    <div className="container mt-5">
+      <h2>Apply for Job</h2>
+      <p><strong>Job:</strong> {jobDetails.description}</p>
+      <p><strong>Pay:</strong> ${jobDetails.pay}</p>
+
+      <Form onSubmit={handleSubmit}>
+        {/* Message / Cover Letter */}
+        <Form.Group controlId="applicationMessage">
+          <Form.Label>Message</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={4}
+            name="message"
+            value={applicationData.message}
+            onChange={handleChange}
+            placeholder="Write a message to the job poster"
+            required
+          />
+        </Form.Group>
+
+        <Button type="submit" variant="primary">
+          Submit Application
+        </Button>
+      </Form>
     </div>
   );
-};
-
-ApplicationForm.propTypes = {
-  jobId: PropTypes.number.isRequired,
-  posterId: PropTypes.number.isRequired,
-  applicantId: PropTypes.number.isRequired,
-};
-
-export default ApplicationForm;
+}
