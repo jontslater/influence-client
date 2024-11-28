@@ -2,7 +2,6 @@ import { clientCredentials } from '../utils/client';
 
 const endpoint = clientCredentials.databaseURL;
 
-// Create an application
 const createApplication = (payload) => fetch(`${endpoint}/applications`, {
   method: 'POST',
   headers: {
@@ -16,7 +15,6 @@ const createApplication = (payload) => fetch(`${endpoint}/applications`, {
     throw error;
   });
 
-// Get all applications
 const getAllApplications = () => fetch(`${endpoint}/applications`, {
   method: 'GET',
   headers: {
@@ -29,7 +27,6 @@ const getAllApplications = () => fetch(`${endpoint}/applications`, {
     throw error;
   });
 
-// Get a single application
 const getSingleApplication = (id) => new Promise((resolve, reject) => {
   fetch(`${endpoint}/applications/${id}`)
     .then((response) => response.json())
