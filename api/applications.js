@@ -2,6 +2,7 @@ import { clientCredentials } from '../utils/client';
 
 const endpoint = clientCredentials.databaseURL;
 
+// Create an application
 const createApplication = (payload) => fetch(`${endpoint}/applications`, {
   method: 'POST',
   headers: {
@@ -15,6 +16,7 @@ const createApplication = (payload) => fetch(`${endpoint}/applications`, {
     throw error;
   });
 
+// Get all applications (to check if the user has applied for a job)
 const getAllApplications = () => fetch(`${endpoint}/applications`, {
   method: 'GET',
   headers: {
@@ -27,12 +29,18 @@ const getAllApplications = () => fetch(`${endpoint}/applications`, {
     throw error;
   });
 
-const getSingleApplication = (id) => new Promise((resolve, reject) => {
-  fetch(`${endpoint}/applications/${id}`)
-    .then((response) => response.json())
-    .then(resolve)
-    .catch(reject);
-});
+// Get a single application for a specific job and user
+const getSingleApplication = (jobId, userId) => fetch(`${endpoint}/applications?job_id=${jobId}&user_id=${userId}`, {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+  .then((response) => response.json())
+  .catch((error) => {
+    console.error('Error fetching application:', error);
+    throw error;
+  });
 
 // Update an application
 const updateApplication = (id, payload) => fetch(`${endpoint}/applications/${id}`, {
@@ -49,17 +57,17 @@ const updateApplication = (id, payload) => fetch(`${endpoint}/applications/${id}
   });
 
 // Delete an application
-const deleteApplication = (id) => new Promise((resolve, reject) => {
-  fetch(`${endpoint}/applications/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-    .then((response) => response.json())
-    .then(resolve)
-    .catch(reject);
-});
+const deleteApplication = (id) => fetch(`${endpoint}/applications/${id}`, {
+  method: 'DELETE',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+  .then((response) => response.json())
+  .catch((error) => {
+    console.error('Error deleting application:', error);
+    throw error;
+  });
 
 export {
   createApplication,
