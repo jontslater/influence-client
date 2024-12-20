@@ -1,27 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import {
-  Container, Card, Button, ListGroup,
+  Container, Card, Button, ListGroup, Form,
 } from 'react-bootstrap';
 import Link from 'next/link';
 import { useAuth } from '../utils/context/authContext';
 import { getUserByUid } from '../api/users';
 import { getJobsByUserId } from '../api/job';
+import { updateSocial } from '../api/socials';
 
 export default function Profile() {
   const [userDetails, setUserDetails] = useState({});
-  const [jobs, setJobs] = useState([]); // State to hold the jobs
-  const [currentJobIndex, setCurrentJobIndex] = useState(0); // Current index for job display
-  const jobsPerPage = 5; // Number of jobs to display per page
+  const [jobs, setJobs] = useState([]);
+  const [socialLinks, setSocialLinks] = useState({
+    facebook: '',
+    instagram: '',
+    bluesky: '',
+    tiktok: '',
+    twitter: '',
+  });
+  const [currentJobIndex, setCurrentJobIndex] = useState(0);
+  const jobsPerPage = 5;
   const router = useRouter();
   const { user } = useAuth();
 
-  // Fetch user details first, then fetch jobs by user ID
   const getUserAndJobs = () => {
     getUserByUid(user?.uid).then((userData) => {
       setUserDetails(userData);
+      const socials = userData?.social?.[0] || {
+        facebook: '',
+        instagram: '',
+        bluesky: '',
+        tiktok: '',
+        twitter: '',
+      };
+
+      setSocialLinks(socials);
+
       if (userData?.id) {
-        getJobsByUserId(userData.id).then(setJobs); // Use userDetails.id for fetching jobs
+        getJobsByUserId(userData.id).then(setJobs);
       }
     });
   };
@@ -30,7 +47,7 @@ export default function Profile() {
     if (user?.uid) {
       getUserAndJobs();
     }
-  }, [user.uid]);
+  }, [user?.uid]);
 
   const handleEditUserClick = () => {
     router.push(`/user/edit/${userDetails?.id}`);
@@ -48,7 +65,19 @@ export default function Profile() {
     setCurrentJobIndex((prevIndex) => Math.max(prevIndex - jobsPerPage, 0));
   };
 
-  const displayedJobs = jobs.slice(currentJobIndex, currentJobIndex + jobsPerPage); // Get the jobs to display
+  const handleSocialChange = (e) => {
+    const { name, value } = e.target;
+    setSocialLinks((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const handleSocialSubmit = (e) => {
+    e.preventDefault();
+    updateSocial(userDetails.social.id, socialLinks).then(() => {
+      alert('Social links updated successfully!');
+    });
+  };
+
+  const displayedJobs = jobs.slice(currentJobIndex, currentJobIndex + jobsPerPage);
 
   return (
     <Container className="mt-5">
@@ -112,6 +141,29 @@ export default function Profile() {
             )}
           </div>
         </div>
+
+        {/* Social Links Section */}
+        <Card style={{ flex: '0 0 300px', padding: '20px' }}>
+          <h3>Social Links</h3>
+          <Form onSubmit={handleSocialSubmit}>
+            {['facebook', 'instagram', 'bluesky', 'tiktok', 'twitter'].map((platform) => (
+              <Form.Group className="mb-3" controlId={platform} key={platform}>
+                <Form.Label>{platform.charAt(0).toUpperCase() + platform.slice(1)}:</Form.Label>
+                <Form.Control
+                  type="url"
+                  name={platform}
+                  value={socialLinks[platform] || ''}
+                  onChange={handleSocialChange}
+                  placeholder={`Enter your ${platform} URL`}
+                  aria-label={`Enter your ${platform} URL`}
+                />
+              </Form.Group>
+            ))}
+            <Button variant="success" type="submit">
+              Save Links
+            </Button>
+          </Form>
+        </Card>
       </div>
     </Container>
   );
