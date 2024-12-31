@@ -29,6 +29,12 @@ const getAllSocials = () => fetch(`${endpoint}/socials`, {
     throw error;
   });
 
+const getSocialByUserId = async (userId) => {
+  const response = await fetch(`/api/socials?user_id=${userId}`);
+  if (!response.ok) throw new Error('Failed to fetch social data');
+  return response.json();
+};
+
 // Get a single social
 const getSingleSocial = (id) => fetch(`${endpoint}/socials/${id}`, {
   method: 'GET',
@@ -42,7 +48,6 @@ const getSingleSocial = (id) => fetch(`${endpoint}/socials/${id}`, {
     throw error;
   });
 
-// Update a social
 const updateSocial = (id, payload) => fetch(`${endpoint}/socials/${id}`, {
   method: 'PUT',
   headers: {
@@ -52,7 +57,7 @@ const updateSocial = (id, payload) => fetch(`${endpoint}/socials/${id}`, {
 })
   .then((response) => response.json())
   .catch((error) => {
-    console.error('Error updating social:', error);
+    console.error('Error updating user:', error);
     throw error;
   });
 
@@ -75,4 +80,5 @@ export {
   getSingleSocial,
   updateSocial,
   deleteSocial,
+  getSocialByUserId,
 };

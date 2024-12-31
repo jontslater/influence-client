@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import {
-  Container, Card, Button, ListGroup, Form,
+  Container, Card, Button, ListGroup,
 } from 'react-bootstrap';
 import Link from 'next/link';
 import { useAuth } from '../utils/context/authContext';
@@ -13,6 +13,7 @@ export default function Profile() {
   const [userDetails, setUserDetails] = useState({});
   const [jobs, setJobs] = useState([]);
   const [socialLinks, setSocialLinks] = useState({
+    id: null, // Store the social ID
     facebook: '',
     instagram: '',
     bluesky: '',
@@ -27,14 +28,16 @@ export default function Profile() {
   const getUserAndJobs = () => {
     getUserByUid(user?.uid).then((userData) => {
       setUserDetails(userData);
+
+      // Fetch and set the social links
       const socials = userData?.social?.[0] || {
+        id: null,
         facebook: '',
         instagram: '',
         bluesky: '',
         tiktok: '',
         twitter: '',
       };
-
       setSocialLinks(socials);
 
       if (userData?.id) {
@@ -72,9 +75,16 @@ export default function Profile() {
 
   const handleSocialSubmit = (e) => {
     e.preventDefault();
-    updateSocial(userDetails.social.id, socialLinks).then(() => {
-      alert('Social links updated successfully!');
-    });
+
+    if (socialLinks.id) {
+      updateSocial(socialLinks.id, socialLinks)
+        .then(() => {
+          alert('Social links updated successfully!');
+        })
+        .catch((error) => console.error('Error updating social links:', error));
+    } else {
+      alert('No social record to update.');
+    }
   };
 
   const displayedJobs = jobs.slice(currentJobIndex, currentJobIndex + jobsPerPage);
@@ -145,24 +155,26 @@ export default function Profile() {
         {/* Social Links Section */}
         <Card style={{ flex: '0 0 300px', padding: '20px' }}>
           <h3>Social Links</h3>
-          <Form onSubmit={handleSocialSubmit}>
-            {['facebook', 'instagram', 'bluesky', 'tiktok', 'twitter'].map((platform) => (
-              <Form.Group className="mb-3" controlId={platform} key={platform}>
-                <Form.Label>{platform.charAt(0).toUpperCase() + platform.slice(1)}:</Form.Label>
-                <Form.Control
+          <form onSubmit={handleSocialSubmit}>
+            {Object.keys(socialLinks).filter((key) => key !== 'id').map((key) => (
+              <div key={key} className="mb-3">
+                <label htmlFor={key} className="form-label">
+                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                </label>
+                <input
                   type="url"
-                  name={platform}
-                  value={socialLinks[platform] || ''}
+                  className="form-control"
+                  id={key}
+                  name={key}
+                  value={socialLinks[key]}
                   onChange={handleSocialChange}
-                  placeholder={`Enter your ${platform} URL`}
-                  aria-label={`Enter your ${platform} URL`}
                 />
-              </Form.Group>
+              </div>
             ))}
-            <Button variant="success" type="submit">
-              Save Links
+            <Button type="submit" variant="primary">
+              Update Social Links
             </Button>
-          </Form>
+          </form>
         </Card>
       </div>
     </Container>
