@@ -130,6 +130,11 @@ export default function Profile() {
                       VIEW
                     </Button>
                   </Link>
+                  <Link href={`/applications/${job.id}`} passHref>
+                    <Button variant="info" className="action-button" aria-label={`View job ${job.title}`}>
+                      VIEW APPLICATIONS
+                    </Button>
+                  </Link>
                 </ListGroup.Item>
               ))}
             </ListGroup>

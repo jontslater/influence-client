@@ -69,10 +69,28 @@ const deleteApplication = (id) => fetch(`${endpoint}/applications/${id}`, {
     throw error;
   });
 
+const getApplicationsByJobId = (jobId) => fetch(`${endpoint}/applications?job_id=${jobId}`, {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`Failed to fetch applications for jobId: ${jobId}`);
+    }
+    return response.json();
+  })
+  .catch((error) => {
+    console.error('Error fetching applications:', error);
+    throw error;
+  });
+
 export {
   createApplication,
   getAllApplications,
   getSingleApplication,
   updateApplication,
   deleteApplication,
+  getApplicationsByJobId,
 };
