@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useAuth } from '../utils/context/authContext';
 import { getUserByUid } from '../api/users';
 import { getJobsByUserId } from '../api/job';
-import { updateSocial } from '../api/socials';
+import { createSocial, updateSocial } from '../api/socials';
 
 export default function Profile() {
   const [userDetails, setUserDetails] = useState({});
@@ -76,14 +76,30 @@ export default function Profile() {
   const handleSocialSubmit = (e) => {
     e.preventDefault();
 
+    // Log the socialLinks object to inspect what is being sent
+    console.log('Social Links being sent:', socialLinks);
+
+    // Ensure user_id from userDetails is included in the socialLinks
+    const socialDetails = {
+      ...socialLinks,
+      user_id: userDetails.id, // Add the user’s database ID to social details
+    };
+
     if (socialLinks.id) {
-      updateSocial(socialLinks.id, socialLinks)
+      // If socialLinks.id exists, update the existing record
+      updateSocial(socialDetails.id, socialDetails)
         .then(() => {
           alert('Social links updated successfully!');
         })
         .catch((error) => console.error('Error updating social links:', error));
     } else {
-      alert('No social record to update.');
+      // If no id exists, create a new social record
+      createSocial(socialDetails)
+        .then(() => {
+          alert('Social links created successfully!');
+          // Optionally, redirect to profile page or clear the form
+        })
+        .catch((error) => console.error('Error creating social links:', error));
     }
   };
 

@@ -10,6 +10,7 @@ export default function SocialsForm() {
   const { id } = router.query; // If there's an ID, it means we're editing an existing social record
   const { user } = useAuth(); // Get the authenticated user
   const [socialData, setSocialData] = useState({
+    id: '',
     facebook: '',
     instagram: '',
     bluesky: '',
@@ -51,8 +52,11 @@ export default function SocialsForm() {
 
     const socialDetails = {
       ...socialData,
-      user_id: user.id, // Assign the authenticated user's ID
+      user_id: user.id, // Assign the authenticated user's ID directly
     };
+
+    // Log the social details being sent for create or update
+    console.log('Social Details being sent:', socialDetails);
 
     if (id) {
       // Update the social record if editing
